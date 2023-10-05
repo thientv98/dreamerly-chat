@@ -8,8 +8,9 @@ import { RootState } from "../../types";
 
 const UserOnline: FC = () => {
   const dispatch = useDispatch();
-  const onlineUsers = useSelector((state: RootState) => state.user.users);
+  const users = useSelector((state: RootState) => state.user.users);
   const currentUser = useSelector((state: RootState) => state.user.user);
+  const onlineUsers = useSelector((state: RootState) => state.user.onlineUsers);
 
   const openConversation = async (userId: string) => {
     let conversation = await getConversationByUser(currentUser?.id || "", userId);
@@ -22,7 +23,7 @@ const UserOnline: FC = () => {
       }
     }
     conversation.userData = conversation.users.map(user => {
-      const find = onlineUsers.find(u => u.id === user);
+      const find = users.find(u => u.id === user);
       return {
         userId: user,
         email: find?.email, name: find?.name, avatar: find?.avatar
@@ -42,24 +43,27 @@ const UserOnline: FC = () => {
   return (
     <>
       <div className="flex flex-row items-center justify-between text-xs">
-        <span className="font-bold">Online</span>
+        <span className="font-bold">Users</span>
         <span
           className="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full"
-        >4</span>
+        >{users.length - 1}</span>
       </div>
       <div className="flex flex-col space-y-1 mt-4 -mx-2 max-h-48 overflow-y-auto">
-        {onlineUsers.map((user) => (
+        {users.map((user) => (
           user.id !== currentUser?.id && <button
             className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
             key={user.id}
             onClick={() => { openConversation(user.id) }}
           >
-            <div className="h-8 w-8 rounded-full border overflow-hidden">
-              <img
-                src={user?.avatar}
-                alt="Avatar"
-                className="h-full w-full"
-              />
+            <div className="relative">
+              <div className="h-9 w-9 rounded-full border overflow-hidden">
+                <img
+                  src={user?.avatar}
+                  alt="Avatar"
+                  className="h-full w-full"
+                />
+              </div>
+              {onlineUsers.includes(user.id) && <span className="bottom-0 left-6 absolute w-3 h-3 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>}
             </div>
             <div className="ml-2 text-sm font-semibold">{user.name}</div>
 

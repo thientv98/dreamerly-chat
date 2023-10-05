@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
-import Pusher from "pusher-js";
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createConversation } from "../../firebase/conversation";
 import { createMessage, getMessages } from "../../firebase/message";
 import { setConversation, setMessages, setTimestamp } from "../../store/conversationSlice";
 import { RootState } from "../../types";
+import ConversationHeader from "./ConversationHeader";
 import MessageLeft from "./MessageLeft";
 import MessageRight from "./MessageRight";
 
@@ -15,8 +15,8 @@ const Conversation: FC = () => {
   const conversation = useSelector((state: RootState) => state.conversation.conversation);
   const messages = useSelector((state: RootState) => state.conversation.messages);
   const timestamp = useSelector((state: RootState) => state.conversation.timestamp);
+  const channel = useSelector((state: RootState) => state.conversation.channel);
   const [content, setContent] = useState("")
-  const [channel, setChannel] = useState<any>("");
 
   const sendMessage = async () => {
     if (content) {
@@ -38,7 +38,9 @@ const Conversation: FC = () => {
       })
       setContent("")
       if (channel) {
+        console.log(channel);
         channel.trigger(`client-conversation-${conversation.id}`, { message: content });
+        channel.trigger(`client-conversations`, { message: content, conversation: conversation.id });
       }
       dispatch(setTimestamp(dayjs().unix()));
     }
@@ -49,8 +51,6 @@ const Conversation: FC = () => {
       const messages = await getMessages(conversation?.id)
       dispatch(setMessages(messages));
 
-      console.log(conversation?.lastMessage?.id);
-
       if (conversation?.lastMessage?.id) {
         const el = document.querySelector(`#message-${conversation?.lastMessage?.id}`);
         if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -59,27 +59,6 @@ const Conversation: FC = () => {
       dispatch(setMessages([]));
     }
   }
-
-  const listenPusher = async () => {
-    if (!conversation?.id) return
-    const pusher = new Pusher("4a6b3605a5b7968dae2f", {
-      cluster: "ap1",
-      authEndpoint: 'https://pusher-auth-demo-c7a875f7f471.herokuapp.com/pusher/auth'
-    });
-    const c = pusher.subscribe("private-message");
-    c.bind(`client-conversation-${conversation.id}`, (data: any) => {
-      console.log(111111, data);
-      dispatch(setTimestamp(dayjs().unix()));
-    });
-    setChannel(c)
-    return () => {
-      pusher.unsubscribe("private-message");
-    };
-  }
-
-  useEffect(() => {
-    listenPusher()
-  }, [conversation])
 
   useEffect(() => {
     fetchMessages()
@@ -91,7 +70,7 @@ const Conversation: FC = () => {
       <div
         className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4"
       >
-        {conversation?.id}
+        <ConversationHeader conversation={conversation} />
         {conversation ?
           <>
             <div className="flex flex-col h-full overflow-x-auto mb-4">

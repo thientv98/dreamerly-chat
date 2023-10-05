@@ -9,7 +9,8 @@ const ListConversation: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.user);
   const conversations = useSelector((state: RootState) => state.conversation.conversations);
   const users = useSelector((state: RootState) => state.user.users);
-  const timestamp = useSelector((state: RootState) => state.conversation.timestamp);
+  const timestampConversations = useSelector((state: RootState) => state.conversation.timestampConversations);
+  const onlineUsers = useSelector((state: RootState) => state.user.onlineUsers);
 
   const openConversation = async (conversation: Conversation) => {
     dispatch(setConversation(conversation));
@@ -35,11 +36,12 @@ const ListConversation: FC = () => {
 
   useEffect(() => {
     fetchConversations()
-  }, [currentUser, timestamp])
+  }, [currentUser, timestampConversations])
+
   return (
     <>
       <div className="flex flex-row items-center justify-between text-xs mt-6">
-        <span className="font-bold">Conversation</span>
+        <span className="font-bold">Conversations</span>
         <span
           className="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full"
         >{conversations.length}</span>
@@ -53,22 +55,22 @@ const ListConversation: FC = () => {
             {conversation?.userData?.map((item, index) => {
               return (
                 item.userId !== currentUser?.id ? <React.Fragment key={index}>
-                  <div
-                    className="h-8 w-8 rounded-full border overflow-hidden"
-                    key={`img-${index}`}
-                  >
-                    <img
-                      src={item?.avatar}
-                      alt="Avatar"
-                      className="h-full w-full"
-                    />
+                  <div className="relative">
+                    <div className="h-9 w-9 rounded-full border overflow-hidden">
+                      <img
+                        src={item?.avatar}
+                        alt="Avatar"
+                        className="h-full w-full"
+                      />
+                    </div>
+                    {onlineUsers.includes(item.userId) && <span className="bottom-0 left-6 absolute w-3 h-3 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>}
                   </div>
                   <div className="text-left">
                     <div className="ml-2 text-sm font-semibold" key={`name-${index}`}>
                       {item.name}
                     </div>
                     <div className="ml-2 text-sm">
-                      {conversation?.lastMessage?.content}
+                      {currentUser?.id === conversation?.lastMessage?.senderId ? 'You: ' : item.name + ': '}{conversation?.lastMessage?.content}
                     </div>
                   </div>
 

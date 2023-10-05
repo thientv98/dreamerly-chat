@@ -1,3 +1,6 @@
+import PresenceChannel from 'pusher-js/types/src/core/channels/presence_channel';
+import PrivateChannel from 'pusher-js/types/src/core/channels/private_channel';
+
 export type User = {
   id: string;
   email: string;
@@ -5,6 +8,7 @@ export type User = {
   avatar: string;
   lastActive?: number;
   unreadNotifications?: Array<string>
+  online?: boolean;
 }
 
 export type UserCreate = {
@@ -44,16 +48,25 @@ export type MessageCreate = {
   type: string;
 }
 
+
+export interface PusherMemberType {
+  id: string
+}
+
 interface UserState {
   user: User | null;
-  users: User[]
+  users: User[],
+  onlineUsers: Array<string>
 }
 
 interface ConversationState {
   conversation: Conversation,
   conversations: Conversation[],
   messages: Message[],
-  timestamp: number
+  timestamp: number,
+  timestampConversations: number,
+  channel: PrivateChannel,
+  channelOnline: PresenceChannel,
 }
 
 export interface RootState {

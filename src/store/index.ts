@@ -7,4 +7,7 @@ export const store = configureStore({
     user: userReducer,
     conversation: conversationSlice
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: false
+  }),
 });

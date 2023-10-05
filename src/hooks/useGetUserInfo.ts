@@ -29,7 +29,7 @@ const useGetUserInfo = (uid: string | null) => {
     };
 
     fetchUserInfo();
-  }, [uid, dispatch, db]);
+  }, [uid, dispatch]);
 };
 
 export default useGetUserInfo;
