@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthRoute: React.FunctionComponent<any> = (props) => {
@@ -19,7 +19,7 @@ const AuthRoute: React.FunctionComponent<any> = (props) => {
     });
 
     return () => AuthCheck();
-  }, [auth]);
+  }, [auth, navigate]);
 
   if (loading) return <p>loading ...</p>;
 

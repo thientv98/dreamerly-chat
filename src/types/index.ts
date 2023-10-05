@@ -9,6 +9,7 @@ export type User = {
   lastActive?: number;
   unreadNotifications?: Array<string>
   online?: boolean;
+  tokens?: Array<string>;
 }
 
 export type UserCreate = {
@@ -19,12 +20,17 @@ export type UserCreate = {
   unreadNotifications?: Array<string>
 }
 
+type Seen<Type> = {
+  [Property in keyof Type]: number;
+};
+
 export type Conversation = {
   id: string;
   users: Array<string>;
   userData?: Array<UserChat>
   lastMessageTimestamp: number;
   lastMessage?: Message;
+  seen?: Seen<string>
 }
 
 export type UserChat = {

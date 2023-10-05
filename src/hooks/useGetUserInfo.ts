@@ -3,7 +3,10 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { USER_DOC } from '../config/const';
 import { db } from '../config/firebase';
+import { getMessagingToken } from '../firebase';
+import { updateUserToken } from '../firebase/user';
 import { setUser } from '../store/userSlice';
+import { User } from '../types';
 
 const useGetUserInfo = (uid: string | null) => {
   const dispatch = useDispatch();
@@ -18,10 +21,13 @@ const useGetUserInfo = (uid: string | null) => {
         const user = docSnap.exists() ? docSnap.data() : null
 
         if (user) {
-          dispatch(setUser({
-            ...user,
-            id: docSnap.id
-          }));
+          const userData = { ...user, id: docSnap.id } as User
+          dispatch(setUser(userData));
+
+          const token = await getMessagingToken()
+          if (token) {
+            updateUserToken(userData, token)
+          }
         }
       } catch (error) {
         console.error("Error fetching user: ", error);

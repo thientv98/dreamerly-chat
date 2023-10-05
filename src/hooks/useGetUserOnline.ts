@@ -17,7 +17,6 @@ const useGetUserOnline = (loggedInUid: string | null) => {
 
     channelOnline.bind("pusher:subscription_succeeded", (members: any) => {
       const ids = Object.keys(members?.members)
-      console.log(ids);
       onlineRef.current = ids;
       dispatch(setOnlineUsers(onlineRef.current));
     });
@@ -39,8 +38,6 @@ const useGetUserOnline = (loggedInUid: string | null) => {
         dispatch(setOnlineUsers(onlineRef.current));
       }
     });
-
-    // dispatch(setChannelOnline(channelOnline));
 
     return () => {
       pusher.unsubscribe("presence-online");

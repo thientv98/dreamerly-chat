@@ -48,7 +48,7 @@ const Conversation: FC = () => {
 
   const fetchMessages = async () => {
     if (conversation?.id) {
-      const messages = await getMessages(conversation?.id)
+      const messages = await getMessages(conversation?.id, currentUser?.id || "")
       dispatch(setMessages(messages));
 
       if (conversation?.lastMessage?.id) {
@@ -70,9 +70,9 @@ const Conversation: FC = () => {
       <div
         className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4"
       >
-        <ConversationHeader conversation={conversation} />
         {conversation ?
           <>
+            <ConversationHeader conversation={conversation} />
             <div className="flex flex-col h-full overflow-x-auto mb-4">
               <div className="flex flex-col h-full">
                 <div className="grid grid-cols-12 gap-y-2">

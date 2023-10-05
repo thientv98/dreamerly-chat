@@ -24,12 +24,19 @@ export const createMessage = async (conversationId: string, message: MessageCrea
   });
 }
 
-export const getMessages = async (conversationId: string) => {
+export const getMessages = async (conversationId: string, userId: string) => {
   const q = query(
     collection(db, CONVERSATION_DOC, conversationId, MESSAGE_DOC),
     orderBy("timestamp", 'asc')
   );
   const messages = await getDocs(q)
+
+  if (userId) {
+    updateDoc(doc(db, CONVERSATION_DOC, conversationId), {
+      [`seen.${userId}`]: dayjs().unix(),
+    });
+  }
+
   return messages.docs.map(message => {
     return {
       ...message.data() as Message,
