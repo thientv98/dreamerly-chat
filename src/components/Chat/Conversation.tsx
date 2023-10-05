@@ -1,8 +1,10 @@
+import dayjs from "dayjs";
+import Pusher from "pusher-js";
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createConversation } from "../../firebase/conversation";
 import { createMessage, getMessages } from "../../firebase/message";
-import { setConversation, setMessages } from "../../store/conversationSlice";
+import { setConversation, setMessages, setTimestamp } from "../../store/conversationSlice";
 import { RootState } from "../../types";
 import MessageLeft from "./MessageLeft";
 import MessageRight from "./MessageRight";
@@ -12,7 +14,9 @@ const Conversation: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.user);
   const conversation = useSelector((state: RootState) => state.conversation.conversation);
   const messages = useSelector((state: RootState) => state.conversation.messages);
+  const timestamp = useSelector((state: RootState) => state.conversation.timestamp);
   const [content, setContent] = useState("")
+  const [channel, setChannel] = useState<any>("");
 
   const sendMessage = async () => {
     if (content) {
@@ -33,7 +37,10 @@ const Conversation: FC = () => {
         type: "message"
       })
       setContent("")
-      fetchMessages()
+      if (channel) {
+        channel.trigger(`client-conversation-${conversation.id}`, { message: content });
+      }
+      dispatch(setTimestamp(dayjs().unix()));
     }
   }
 
@@ -41,15 +48,43 @@ const Conversation: FC = () => {
     if (conversation?.id) {
       const messages = await getMessages(conversation?.id)
       dispatch(setMessages(messages));
+
+      console.log(conversation?.lastMessage?.id);
+
+      if (conversation?.lastMessage?.id) {
+        const el = document.querySelector(`#message-${conversation?.lastMessage?.id}`);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }
     } else {
       dispatch(setMessages([]));
     }
   }
 
+  const listenPusher = async () => {
+    if (!conversation?.id) return
+    const pusher = new Pusher("4a6b3605a5b7968dae2f", {
+      cluster: "ap1",
+      authEndpoint: 'https://pusher-auth-demo-c7a875f7f471.herokuapp.com/pusher/auth'
+    });
+    const c = pusher.subscribe("private-message");
+    c.bind(`client-conversation-${conversation.id}`, (data: any) => {
+      console.log(111111, data);
+      dispatch(setTimestamp(dayjs().unix()));
+    });
+    setChannel(c)
+    return () => {
+      pusher.unsubscribe("private-message");
+    };
+  }
+
+  useEffect(() => {
+    listenPusher()
+  }, [conversation])
+
   useEffect(() => {
     fetchMessages()
     setContent("")
-  }, [conversation])
+  }, [conversation, timestamp])
 
   return (
     <div className="flex flex-col flex-auto h-full p-6">

@@ -20,7 +20,7 @@ export type Conversation = {
   users: Array<string>;
   userData?: Array<UserChat>
   lastMessageTimestamp: number;
-  lastMessage?: string;
+  lastMessage?: Message;
 }
 
 export type UserChat = {

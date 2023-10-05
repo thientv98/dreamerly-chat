@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import React, { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getListConversations } from "../../firebase/conversation";
 import { setConversation, setConversations } from "../../store/conversationSlice";
@@ -9,6 +9,7 @@ const ListConversation: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.user);
   const conversations = useSelector((state: RootState) => state.conversation.conversations);
   const users = useSelector((state: RootState) => state.user.users);
+  const timestamp = useSelector((state: RootState) => state.conversation.timestamp);
 
   const openConversation = async (conversation: Conversation) => {
     dispatch(setConversation(conversation));
@@ -34,26 +35,27 @@ const ListConversation: FC = () => {
 
   useEffect(() => {
     fetchConversations()
-  }, [currentUser])
+  }, [currentUser, timestamp])
   return (
     <>
       <div className="flex flex-row items-center justify-between text-xs mt-6">
         <span className="font-bold">Conversation</span>
         <span
           className="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full"
-        >7</span>
+        >{conversations.length}</span>
       </div>
-      {conversations.map(conversation => (
+      {conversations.map((conversation) => (
         <div className="flex flex-col space-y-1 mt-4 -mx-2" key={conversation.id}>
           <button
             className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
             onClick={() => openConversation(conversation)}
           >
-            {conversation?.userData?.map(item => (
-              <>
-                {item.userId !== currentUser?.id && <>
+            {conversation?.userData?.map((item, index) => {
+              return (
+                item.userId !== currentUser?.id ? <React.Fragment key={index}>
                   <div
                     className="h-8 w-8 rounded-full border overflow-hidden"
+                    key={`img-${index}`}
                   >
                     <img
                       src={item?.avatar}
@@ -61,12 +63,18 @@ const ListConversation: FC = () => {
                       className="h-full w-full"
                     />
                   </div>
-                  <div className="ml-2 text-sm font-semibold">
-                    {item.name}
+                  <div className="text-left">
+                    <div className="ml-2 text-sm font-semibold" key={`name-${index}`}>
+                      {item.name}
+                    </div>
+                    <div className="ml-2 text-sm">
+                      {conversation?.lastMessage?.content}
+                    </div>
                   </div>
-                </>}
-              </>
-            ))}
+
+                </React.Fragment> : ''
+              )
+            })}
           </button>
         </div>
       ))}

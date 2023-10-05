@@ -7,7 +7,7 @@ interface MessageRightProps {
 const MessageRight: React.FunctionComponent<MessageRightProps> = ({ message, conversation }) => {
   const user = conversation?.userData?.find(user => user.userId === message.senderId)
   return (
-    <div className="col-start-6 col-end-13 p-3 rounded-lg">
+    <div className="col-start-6 col-end-13 p-3 rounded-lg" id={`message-${message.id}`}>
       <div className="flex items-center justify-start flex-row-reverse">
         <div
           className="h-10 w-10 rounded-full border overflow-hidden flex-shrink-0"
