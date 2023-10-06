@@ -29,6 +29,7 @@ export const getConversationByUser = async (userId1: string, userId2: string): P
 }
 
 export const getListConversations = async (userId: string) => {
+  console.log(123);
   const q = query(
     collection(db, CONVERSATION_DOC),
     orderBy("lastMessageTimestamp", "desc"),
@@ -36,6 +37,8 @@ export const getListConversations = async (userId: string) => {
   )
 
   const conversations = await getDocs(q);
+  console.log(conversations.metadata.fromCache, conversations.docs[0].data());
+
 
   return !conversations.empty ? conversations.docs.map(conversation => ({
     ...conversation.data() as Conversation,

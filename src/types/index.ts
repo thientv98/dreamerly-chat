@@ -20,17 +20,13 @@ export type UserCreate = {
   unreadNotifications?: Array<string>
 }
 
-type Seen<Type> = {
-  [Property in keyof Type]: number;
-};
-
 export type Conversation = {
   id: string;
   users: Array<string>;
   userData?: Array<UserChat>
   lastMessageTimestamp: number;
   lastMessage?: Message;
-  seen?: Seen<string>
+  seen?: { [key: string]: number }
 }
 
 export type UserChat = {

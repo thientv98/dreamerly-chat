@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createConversation } from "../../firebase/conversation";
 import { createMessage, getMessages } from "../../firebase/message";
-import { setConversation, setMessages, setTimestamp } from "../../store/conversationSlice";
+import { setConversation, setMessages, setTimestamp, setTimestampConversations } from "../../store/conversationSlice";
 import { RootState } from "../../types";
 import ConversationHeader from "./ConversationHeader";
 import MessageLeft from "./MessageLeft";
@@ -43,6 +43,7 @@ const Conversation: FC = () => {
         channel.trigger(`client-conversations`, { message: content, conversation: conversation.id });
       }
       dispatch(setTimestamp(dayjs().unix()));
+      // dispatch(setTimestampConversations(dayjs().unix()));
     }
   }
 
@@ -51,9 +52,10 @@ const Conversation: FC = () => {
       const messages = await getMessages(conversation?.id, currentUser?.id || "")
       dispatch(setMessages(messages));
 
-      if (conversation?.lastMessage?.id) {
-        const el = document.querySelector(`#message-${conversation?.lastMessage?.id}`);
+      if (messages.length > 0) {
+        const el = document.querySelector(`#message-${messages[messages.length - 1].id}`);
         if (el) el.scrollIntoView({ behavior: "smooth" });
+        dispatch(setTimestampConversations(dayjs().unix()));
       }
     } else {
       dispatch(setMessages([]));
