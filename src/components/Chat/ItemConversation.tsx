@@ -17,7 +17,6 @@ const ItemConversation: React.FunctionComponent<ItemConversationProps> = ({ conv
 
   const openConversation = async (conversation: Conversation) => {
     dispatch(setConversation(conversation));
-    // dispatch(setTimestampConversations(dayjs().unix()));
   }
 
   useEffect(() => {
@@ -27,7 +26,7 @@ const ItemConversation: React.FunctionComponent<ItemConversationProps> = ({ conv
     const seenList = (conversation?.seen || {})
     const seenAt = seenList[currentUser?.id || ''] || 0
     setSeen(seenAt)
-  }, [conversation])
+  }, [conversation, currentUser])
 
   return (
     <div className="flex flex-col space-y-1 mt-4 -mx-2" key={conversation.id}>
@@ -46,13 +45,15 @@ const ItemConversation: React.FunctionComponent<ItemConversationProps> = ({ conv
             </div>
             {onlineUsers.includes(user?.userId || '') && <span className="bottom-0 left-6 absolute w-3 h-3 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>}
           </div>
-          <div className="text-left">
+          <div className="text-left m-w-80p">
             <div className="ml-2 text-sm font-semibold">
               {user?.name}
             </div>
-            <div className={`ml-2 text-sm ${seen < conversation.lastMessageTimestamp && conversation.lastMessage?.senderId === user?.userId ? 'font-semibold' : ''}`}>
-              {currentUser?.id === conversation?.lastMessage?.senderId ? 'You: ' : user?.name + ': '}{conversation?.lastMessage?.content}
-            </div>
+            {conversation?.lastMessage?.content &&
+              <div className={`ml-2 text-sm text-ellipsis ${seen < conversation.lastMessageTimestamp && conversation.lastMessage?.senderId === user?.userId ? 'font-semibold' : ''}`}>
+                {currentUser?.id === conversation?.lastMessage?.senderId ? 'You: ' : user?.name + ': '}{conversation?.lastMessage?.content}
+              </div>
+            }
           </div>
         </button>
       }

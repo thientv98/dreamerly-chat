@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, orderBy, query, updateDoc } from "@firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, updateDoc } from "@firebase/firestore";
 import dayjs from "dayjs";
 import { CONVERSATION_DOC, MESSAGE_DOC } from "../config/const";
 import { db } from "../config/firebase";
@@ -14,9 +14,16 @@ export const createMessage = async (conversationId: string, message: MessageCrea
     }
   );
 
+  const conversation = (await getDoc(doc(db, CONVERSATION_DOC, conversationId))).data()
+
   updateDoc(doc(db, CONVERSATION_DOC, conversationId), {
     lastMessageTimestamp: timestamp,
     lastMessage: {
+      id: msg.id,
+      ...message,
+      timestamp: timestamp
+    },
+    lastMessageUnread: conversation?.lastMessageUnread ? conversation.lastMessageUnread : {
       id: msg.id,
       ...message,
       timestamp: timestamp
@@ -32,8 +39,12 @@ export const getMessages = async (conversationId: string, userId: string) => {
   const messages = await getDocs(q)
 
   if (userId) {
+    const conversation = (await getDoc(doc(db, CONVERSATION_DOC, conversationId))).data()
+
     updateDoc(doc(db, CONVERSATION_DOC, conversationId), {
       [`seen.${userId}`]: dayjs().unix(),
+      [`notified.${userId}`]: false,
+      'lastMessageUnread': conversation?.lastMessageUnread?.senderId === userId ? conversation?.lastMessageUnread : null
     });
   }
 

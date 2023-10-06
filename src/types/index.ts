@@ -27,6 +27,8 @@ export type Conversation = {
   lastMessageTimestamp: number;
   lastMessage?: Message;
   seen?: { [key: string]: number }
+  notified?: { [key: string]: number }
+  lastMessageUnread?: Message
 }
 
 export type UserChat = {

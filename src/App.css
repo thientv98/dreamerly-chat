@@ -40,3 +40,17 @@
     transform: rotate(360deg);
   }
 }
+
+.text-ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.m-w-80p {
+  max-width: 80%;
+}
+.message-content {
+  max-width: 50%;
+  word-wrap: break-word;
+}

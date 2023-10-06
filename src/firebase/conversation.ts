@@ -8,7 +8,15 @@ export const createConversation = async (userId1: string, userId2: string) => {
   const data = await addDoc(collection(db, CONVERSATION_DOC), {
     users: [userId1, userId2],
     chatId: generateSortedId([userId1, userId2]),
-    lastMessageTimestamp: 0
+    lastMessageTimestamp: 0,
+    seen: {
+      [userId1]: 0,
+      [userId2]: 0
+    },
+    notified: {
+      [userId1]: false,
+      [userId2]: false
+    },
   });
 
   return data.id
@@ -29,7 +37,6 @@ export const getConversationByUser = async (userId1: string, userId2: string): P
 }
 
 export const getListConversations = async (userId: string) => {
-  console.log(123);
   const q = query(
     collection(db, CONVERSATION_DOC),
     orderBy("lastMessageTimestamp", "desc"),
@@ -37,8 +44,6 @@ export const getListConversations = async (userId: string) => {
   )
 
   const conversations = await getDocs(q);
-  console.log(conversations.metadata.fromCache, conversations.docs[0].data());
-
 
   return !conversations.empty ? conversations.docs.map(conversation => ({
     ...conversation.data() as Conversation,

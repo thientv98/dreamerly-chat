@@ -65,10 +65,13 @@ const Conversation: FC = () => {
   useEffect(() => {
     fetchMessages()
     setContent("")
+    if (conversation?.id) {
+      channel.trigger(`client-conversations`, { message: content, conversation: conversation.id });
+    }
   }, [conversation, timestamp])
 
   return (
-    <div className="flex flex-col flex-auto h-full p-6">
+    <div className="col-span-3 lg:col-span-8 flex-auto h-full p-6 overflow-x-auto">
       <div
         className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4"
       >
@@ -114,7 +117,7 @@ const Conversation: FC = () => {
                 <div className="relative w-full">
                   <input
                     type="text"
-                    className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
+                    className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 pr-10 h-10"
                     onChange={(event) => setContent(event.target.value)}
                     value={content}
                   />

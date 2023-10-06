@@ -19,7 +19,7 @@ const MessageLeft: React.FunctionComponent<MessageLeftProps> = ({ message, conve
           />
         </div>
         <div
-          className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+          className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl message-content"
         >
           <div>{message.content}</div>
         </div>
