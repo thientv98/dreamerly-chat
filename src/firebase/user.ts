@@ -7,10 +7,13 @@ export const getUserById = async (userId: string) => {
   const docRef = doc(db, USER_DOC, userId)
   const docSnap = await getDoc(docRef)
   const user = docSnap.exists() ? { ...docSnap.data(), id: docSnap.id } : null
-  return {
-    ...user,
-    id: docSnap.id
-  } as User
+  if (user) {
+    return {
+      ...user,
+      id: docSnap.id
+    } as User
+  }
+  return null
 }
 
 export const setUserById = async (userId: string, userData: UserCreate) => {

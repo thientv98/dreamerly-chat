@@ -1,5 +1,4 @@
 import { doc, getDoc } from '@firebase/firestore';
-import { getAuth, signOut } from 'firebase/auth';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { USER_DOC } from '../config/const';
@@ -11,7 +10,6 @@ import { User } from '../types';
 
 const useGetUserInfo = (uid: string | null) => {
   const dispatch = useDispatch();
-  const auth = getAuth();
 
   useEffect(() => {
     if (!uid) return;
@@ -30,8 +28,6 @@ const useGetUserInfo = (uid: string | null) => {
           if (token) {
             updateUserToken(userData, token)
           }
-        } else {
-          signOut(auth)
         }
       } catch (error) {
         console.error("Error fetching user: ", error);
