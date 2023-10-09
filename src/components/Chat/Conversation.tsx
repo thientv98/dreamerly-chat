@@ -72,6 +72,7 @@ const Conversation: FC = () => {
     if (conversation?.id) {
       channel.trigger(`client-conversations`, { message: content, conversation: conversation.id });
     }
+    // eslint-disable-next-line
   }, [conversation, timestamp])
 
   return (

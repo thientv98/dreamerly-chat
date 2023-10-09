@@ -34,7 +34,7 @@ const usePusher = (loggedInUid: string | null) => {
         pusher.unsubscribe("private-message");
       };
     }
-  }, [conversation, loggedInUid])
+  }, [conversation, loggedInUid, dispatch])
 };
 
 export default usePusher;

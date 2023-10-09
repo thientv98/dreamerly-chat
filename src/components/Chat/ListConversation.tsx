@@ -32,6 +32,7 @@ const ListConversation: FC = () => {
 
   useEffect(() => {
     fetchConversations()
+    // eslint-disable-next-line
   }, [currentUser, timestampConversations, users])
 
   return (
