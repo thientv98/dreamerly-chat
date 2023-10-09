@@ -28,8 +28,6 @@ const useGetUserOnline = (loggedInUid: string | null) => {
     });
 
     channelOnline.bind("pusher:member_added", (member: any) => {
-      console.log('add', onlineRef.current, member.id);
-
       const find = onlineRef.current.findIndex(item => item === member.id)
       if (find === -1) {
         const online = [...onlineRef.current]

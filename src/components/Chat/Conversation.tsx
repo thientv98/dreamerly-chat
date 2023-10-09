@@ -38,12 +38,10 @@ const Conversation: FC = () => {
       })
       setContent("")
       if (channel) {
-        console.log(channel);
         channel.trigger(`client-conversation-${conversation.id}`, { message: content });
         channel.trigger(`client-conversations`, { message: content, conversation: conversation.id });
       }
       dispatch(setTimestamp(dayjs().unix()));
-      // dispatch(setTimestampConversations(dayjs().unix()));
     }
   }
 
@@ -59,6 +57,12 @@ const Conversation: FC = () => {
       }
     } else {
       dispatch(setMessages([]));
+    }
+  }
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      sendMessage()
     }
   }
 
@@ -119,6 +123,7 @@ const Conversation: FC = () => {
                     type="text"
                     className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 pr-10 h-10"
                     onChange={(event) => setContent(event.target.value)}
+                    onKeyUp={(event) => handleKeyPress(event)}
                     value={content}
                   />
                   <button
